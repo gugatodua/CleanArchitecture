@@ -21,19 +21,17 @@ namespace Domain
         public Gender Gender { get; set; }
 
         [Required]
-        [MaxLength(11)]
-        [MinLength(11)]
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "Personal ID must be 11 characters long")]
         public string PersonalID { get; set; }
 
         [Required]
         public DateTime BirthDate { get; set; }
 
-        //TODO : City list?
-        public string City { get; set; }
+        public int CityId { get; set; }
 
         public List<PhoneNumber> PhoneNumbers { get; set; } = new List<PhoneNumber>();
 
-        public string ImageAddressPath { get; set; }
+        public string ImageURL { get; set; }
 
         public List<RelatedPerson> RelatedPeople { get; set; } = new List<RelatedPerson>();
     }

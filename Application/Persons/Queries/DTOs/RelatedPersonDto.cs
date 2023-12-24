@@ -1,13 +1,11 @@
 ﻿using Domain.Enums;
-using System.ComponentModel.DataAnnotations;
 
-namespace Domain
+namespace Application.Persons.Queries.DTOs
 {
-    public class RelatedPerson
+    public class RelatedPersonDto
     {
         public int RelatedPersonIdentifier { get; set; }
-        
-        [Required]
+
         public RelationType RelationType { get; set; }
     }
 }
