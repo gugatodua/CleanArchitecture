@@ -2,7 +2,7 @@
 using Application.Persons.Queries.DTOs;
 using Domain;
 
-namespace Application
+namespace Application.Persons
 {
     public interface IPersonRepository
     {
@@ -11,7 +11,9 @@ namespace Application
         Task<IEnumerable<Person>> GetAllAsync(Person person);
         Task<IEnumerable<RelatedPersonReportDto>> GetRelatedPersonReportByRelationTypeReportAsync();
         Task<Person> GetByIdAsync(int id);
-        Task UpdateAsync(Person person);
+        void Update(Person person);
         Task UpdateRelatedPersonsAsync(int personId, IEnumerable<RelatedPersonDto> relatedPersonDtos);
+        Task<IEnumerable<PersonDto>> QuickSearchPerson(string keyword);
+        Task<IEnumerable<PersonDto>> DetailSearchPerson(PersonDetailedSearchQuery detailedSearchQuery);
     }
 }

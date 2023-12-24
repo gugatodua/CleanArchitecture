@@ -1,6 +1,4 @@
 ﻿using Domain.Enums;
-using Domain;
-using System.ComponentModel.DataAnnotations;
 
 namespace Application.Persons.Queries.DTOs
 {

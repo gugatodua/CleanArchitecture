@@ -1,5 +1,4 @@
-﻿using Application.CustomExceptions;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using System.Net;
 using TBCInterviewProject.Api.Resources;
@@ -8,17 +7,17 @@ namespace TBCInterviewProject.Api.Middleware
 {
     public class ErrorHandler
     {
-        private readonly RequestDelegate _requestDelegate;
+        private readonly RequestDelegate _next;
         public ErrorHandler(RequestDelegate next)
         {
-            this._requestDelegate = next;
+            this._next = next;
         }
 
         public async Task Invoke(HttpContext context, ILogger<ErrorHandler> logger, IStringLocalizer<ErrorResources> localizer)
         {
             try
             {
-                await _requestDelegate(context);
+                await _next(context);
             }
             catch (Exception ex)
             {
@@ -33,18 +32,31 @@ namespace TBCInterviewProject.Api.Middleware
 
             var message = localizer[errorMessageKey].ToString();
 
-            if (ex is BaseCustomException)
+            switch (ex)
             {
-                var baseException = ((BaseCustomException)ex);
+                case Application.CustomExceptions.PersonNotFoundException:
+                    statusCode = HttpStatusCode.NotFound;
+                    errorMessageKey = "PersonNotFound";
+                    message = localizer[errorMessageKey];
+                    break;
 
-                statusCode = baseException.StatusCode;
-                message = ex.Message;
+                case Application.CustomExceptions.FileUploadException:
+                    statusCode = HttpStatusCode.BadRequest;
+                    errorMessageKey = "FileUploadError";
+                    message = localizer[errorMessageKey];
+                    break;
+
+                case Application.CustomExceptions.ApplicationException appEx:
+                    statusCode = appEx.StatusCode;
+                    message = ex.Message;
+                    break;
+
+                default:
+                    logger.LogError(ex, ex.Message);
+                    message = localizer[errorMessageKey];
+                    break;
             }
-            else
-            {
-                logger.LogError(ex, ex.Message);
-            }
-            
+
             var result = JsonConvert.SerializeObject(message, new JsonSerializerSettings());
            
             context.Response.StatusCode = (int)statusCode;

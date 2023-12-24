@@ -79,11 +79,29 @@ namespace TBCInterviewProject.Api.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File Upload Error.
+        /// </summary>
+        public static string FileUploadError {
+            get {
+                return ResourceManager.GetString("FileUploadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to First Name length is invalid.
         /// </summary>
         public static string FirstNameLengthInvalid {
             get {
                 return ResourceManager.GetString("FirstNameLengthInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First Name can only consist of Georgian or Latin letters.
+        /// </summary>
+        public static string FirstNameOnlyInGeorgian {
+            get {
+                return ResourceManager.GetString("FirstNameOnlyInGeorgian", resourceCulture);
             }
         }
         
@@ -115,6 +133,24 @@ namespace TBCInterviewProject.Api.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Birth Date must be in the past.
+        /// </summary>
+        public static string InvalidBirthDate {
+            get {
+                return ResourceManager.GetString("InvalidBirthDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid gender.
+        /// </summary>
+        public static string InvalidGender {
+            get {
+                return ResourceManager.GetString("InvalidGender", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Last Name length is invalid.
         /// </summary>
         public static string LastNameLengthInvalid {
@@ -124,11 +160,29 @@ namespace TBCInterviewProject.Api.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Last Name can only consist of Georgian or Latin letters.
+        /// </summary>
+        public static string LastNameOnlyInGeorgian {
+            get {
+                return ResourceManager.GetString("LastNameOnlyInGeorgian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Last Name is required.
         /// </summary>
         public static string LastNameRequired {
             get {
                 return ResourceManager.GetString("LastNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Personal ID must be 11 characters long.
+        /// </summary>
+        public static string PersonalIdInvalidLength {
+            get {
+                return ResourceManager.GetString("PersonalIdInvalidLength", resourceCulture);
             }
         }
         

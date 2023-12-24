@@ -27,12 +27,10 @@ namespace Persistence
                 Directory.CreateDirectory(_storagePath);
             }
 
-            var filePath = Path.Combine(_storagePath, Guid.NewGuid().ToString() + Path.GetExtension(file.FileName));
+            var newFileName = Path.GetTempFileName();
+            var filePath = Path.Combine(_storagePath, newFileName);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+            await file.CopyToAsync(File.Create(filePath));
 
             return filePath;
         }

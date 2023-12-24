@@ -1,7 +1,8 @@
-﻿using Application;
-using Application.CustomExceptions;
+﻿using Application.CustomExceptions;
+using Application.Persons;
 using Application.Persons.Queries;
 using Application.Persons.Queries.DTOs;
+using AutoMapper;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -12,11 +13,13 @@ namespace Persistence.Repositories
     {
         private readonly TbcDbContext _tbcDbContext;
         private readonly IStringLocalizer _localizer;
+        private readonly IMapper _mapper;
 
-        public PersonRepository(TbcDbContext tbcDbContext, IStringLocalizer localizer)
+        public PersonRepository(TbcDbContext tbcDbContext, IStringLocalizer localizer, IMapper mapper)
         {
             _tbcDbContext = tbcDbContext;
             _localizer = localizer;
+            _mapper = mapper;
         }
 
         public async Task CreateAsync(Person person)
@@ -41,7 +44,7 @@ namespace Persistence.Repositories
             return await _tbcDbContext.Persons.SingleOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task UpdateAsync(Person person)
+        public async void Update(Person person)
         {
             _tbcDbContext.Entry(person).State = EntityState.Modified;
         }
@@ -61,16 +64,10 @@ namespace Persistence.Repositories
             }
 
             person.RelatedPeople.Clear();
+           
+            var relatedPeople = _mapper.Map<IEnumerable<RelatedPerson>>(relatedPersonDtos);
 
-            foreach (var dto in relatedPersonDtos)
-            {
-                var relatedPerson = new RelatedPerson
-                {
-                    RelatedPersonIdentifier = dto.RelatedPersonIdentifier,
-                    RelationType = dto.RelationType,
-                };
-                person.RelatedPeople.Add(relatedPerson);
-            }
+            person.RelatedPeople.AddRange(relatedPeople);
 
             _tbcDbContext.Entry(person).State = EntityState.Modified;
         }
@@ -88,6 +85,62 @@ namespace Persistence.Repositories
                               Count = g.Count()
                           }).ToList()
             }).ToListAsync();
+        }
+
+        public async Task<IEnumerable<PersonDto>> QuickSearchPerson(string keyword)
+        {
+            var query = _tbcDbContext.Persons.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                query = query.Where(p => p.FirstName.Contains(keyword)
+                                      || p.LastName.Contains(keyword)
+                                      || p.PersonalId.Contains(keyword));
+            }
+
+            var persons = await query.ToListAsync();
+            return _mapper.Map<IEnumerable<PersonDto>>(persons);
+        }
+
+        public async Task<IEnumerable<PersonDto>> DetailSearchPerson(PersonDetailedSearchQuery detailedSearchQuery)
+        {
+            var query = _tbcDbContext.Persons.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(detailedSearchQuery.FirstName))
+            {
+                query = query.Where(p => p.FirstName.Contains(detailedSearchQuery.FirstName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(detailedSearchQuery.LastName))
+            {
+                query = query.Where(p => p.LastName.Contains(detailedSearchQuery.LastName));
+            }
+
+            if (detailedSearchQuery.Gender.HasValue)
+            {
+                query = query.Where(p => p.Gender == detailedSearchQuery.Gender.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(detailedSearchQuery.PersonalId))
+            {
+                query = query.Where(p => p.PersonalId == detailedSearchQuery.PersonalId);
+            }
+
+            if (detailedSearchQuery.BirthDate.HasValue)
+            {
+                query = query.Where(p => p.BirthDate.Date == detailedSearchQuery.BirthDate.Value.Date);
+            }
+
+            if (detailedSearchQuery.CityId.HasValue)
+            {
+                query = query.Where(p => p.CityId == detailedSearchQuery.CityId.Value);
+            }
+
+            var persons = await query.Skip((detailedSearchQuery.PageNumber - 1) * detailedSearchQuery.PageSize)
+                            .Take(detailedSearchQuery.PageSize)
+                            .ToListAsync();
+
+            return _mapper.Map<IEnumerable<PersonDto>>(persons);
         }
     }
 }

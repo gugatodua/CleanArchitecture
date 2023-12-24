@@ -1,13 +1,14 @@
 ﻿using Domain.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace Domain
 {
     public class RelatedPerson
     {
-        public int RelatedPersonIdentifier { get; set; }
+        public int Id { get; set; }
         
-        [Required]
         public RelationType RelationType { get; set; }
+
+        public int PersonId { get; set; }
+        public Person Person { get; set; }
     }
 }

@@ -1,13 +1,32 @@
 ﻿using Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Numerics;
+using Microsoft.Extensions.Configuration;
 
 namespace Persistence
 {
     public class TbcDbContext : DbContext
     {
-        public virtual DbSet<Person> Persons { get; set; }
-        public virtual DbSet<PhoneNumber> PhoneNumbers { get; set; }
-        public virtual DbSet<RelatedPerson> RelatedPersons { get; set; }
+        public TbcDbContext(DbContextOptions<TbcDbContext> options) : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Person>()
+                .HasMany(p => p.PhoneNumbers)
+                .WithOne(pn => pn.Person)
+                .HasForeignKey(pn => pn.PersonId);
+
+            modelBuilder.Entity<Person>()
+                .HasMany(p => p.RelatedPeople)
+                .WithOne(rp => rp.Person)
+                .HasForeignKey(rp => rp.PersonId);
+
+            modelBuilder.Entity<PhoneNumber>().HasNoKey();
+        }
+
+        public DbSet<Person> Persons { get; set; }
+        public DbSet<PhoneNumber> PhoneNumbers { get; set; }
+        public DbSet<RelatedPerson> RelatedPersons { get; set; }
     }
 }

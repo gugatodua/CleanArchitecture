@@ -1,6 +1,7 @@
 ﻿using Application.Persons.Commands;
 using Application.Persons.Queries;
 using Application.Persons.Queries.DTOs;
+using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,16 +20,58 @@ namespace TBCInterviewProject.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<PersonDto> GetPerson([FromBody] GetPersonQuery getPersonQuery)
+        public async Task<IActionResult> GetPerson(int id)
         {
+            var getPersonQuery = new GetPersonQuery { Id = id };
+
             var result = await _mediator.Send(getPersonQuery);
-            return result;
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRelatedPersonsByRelationTypeReport(GetRelatedPersonsByRelationTypeReportQuery getRelatedPersonsByRelationTypeReportQuery)
+        public async Task<IActionResult> GetRelatedPersonsByRelationTypeReport()
         {
-            return Ok(await _mediator.Send(getRelatedPersonsByRelationTypeReportQuery));
+            return Ok(await _mediator.Send(new GetRelatedPersonsByRelationTypeReportQuery()));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> QuickSearchPerson(string keyword)
+        {
+            var query = new PersonQuickSearchQuery(keyword);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        public async Task<IActionResult> DetailedSearch(
+            string firstName,
+            string lastName,
+            Gender? gender,
+            string personalId,
+            DateTime? birthDate,
+            int? cityId,
+            int pageNumber = 1,
+            int pageSize = 10)
+        {
+            var query = new PersonDetailedSearchQuery
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Gender = gender,
+                PersonalId = personalId,
+                BirthDate = birthDate,
+                CityId = cityId,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
 
         [HttpPost]
@@ -36,7 +79,7 @@ namespace TBCInterviewProject.Api.Controllers
         {
             await _mediator.Send(createPersonCommand);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]
@@ -44,7 +87,7 @@ namespace TBCInterviewProject.Api.Controllers
         {
             await _mediator.Send(updatePersonCommand);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]
@@ -52,7 +95,7 @@ namespace TBCInterviewProject.Api.Controllers
         {
             await _mediator.Send(updateRelatedPersonListCommand);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete]

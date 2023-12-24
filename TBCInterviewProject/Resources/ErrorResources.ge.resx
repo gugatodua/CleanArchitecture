@@ -125,9 +125,15 @@
     <value>ქალაქის კოდის მითითება  სავალდებულოა</value>
     <comment>ქალაქის კოდის მითითება  სავალდებულოა</comment>
   </data>
+  <data name="FileUploadError" xml:space="preserve">
+    <value>ფაილი არ აიტვირთა</value>
+  </data>
   <data name="FirstNameLengthInvalid" xml:space="preserve">
     <value>სახელის ზომა უნდა იყოს 2-დან 50 სიმბოლომდე</value>
     <comment>სახელის ზომა უნდა იყოს 2-დან 50 სიმბოლომდე</comment>
+  </data>
+  <data name="FirstNameOnlyInGeorgian" xml:space="preserve">
+    <value>სახელის მითითება დასაშვებია მხოლოდ ქართულად</value>
   </data>
   <data name="FirstNameRequired" xml:space="preserve">
     <value>სახელის მითითება სავალდებულოა</value>
@@ -141,13 +147,25 @@
     <value>პრობლემა სერვერზე</value>
     <comment>პრობლემა სერვერზე</comment>
   </data>
+  <data name="InvalidBirthDate" xml:space="preserve">
+    <value>დაბადების თარიღი არასწორია</value>
+  </data>
+  <data name="InvalidGender" xml:space="preserve">
+    <value>სქესი არასწორია</value>
+  </data>
   <data name="LastNameLengthInvalid" xml:space="preserve">
     <value>გვარის ზომა უნდა იყოს 2-დან 50 სიმბოლომდე</value>
     <comment>გვარის ზომა უნდა იყოს 2-დან 50 სიმბოლომდე</comment>
   </data>
+  <data name="LastNameOnlyInGeorgian" xml:space="preserve">
+    <value>გვარის მითითება დასაშვებია მხოლოდ ქართულად</value>
+  </data>
   <data name="LastNameRequired" xml:space="preserve">
     <value>გვარის მითითება სავალდებულოა</value>
     <comment>გვარის მითითება სავალდებულოა</comment>
+  </data>
+  <data name="PersonalIdInvalidLength" xml:space="preserve">
+    <value>პირადი ნომერი უნდა შედგებოდეს 11 ციფრისგან</value>
   </data>
   <data name="PersonalNumberRequired" xml:space="preserve">
     <value>პირადი ნომრის მითითება სავალდებულოა</value>

@@ -2,16 +2,17 @@
 {
     public static class ImageValidator
     {
-        public static bool IsAllowedType(string fileName)
+        private static List<string> _allowedExtensions;
+
+        public static void Initialize(List<string> allowedExtensions)
         {
-            string ext = Path.GetExtension(fileName);
-            return AllowedExtensions.Contains(ext.ToLower());
+            _allowedExtensions = allowedExtensions ?? throw new ArgumentNullException(nameof(allowedExtensions));
         }
 
-        private static readonly List<string> AllowedExtensions = new List<string>
+        public static bool IsAllowedType(string fileName)
         {
-            ".png",
-            ".jpg"
-        };
+            string extension = Path.GetExtension(fileName).ToLower();
+            return _allowedExtensions.Contains(extension);
+        }
     }
 }
