@@ -31,11 +31,14 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddSingleton<IStringLocalizer, StringLocalizer<ErrorResources>>();
 
-builder.Services.AddTransient<IValidator<CreatePersonCommand>, CreatePersonCommandValidator>();
-builder.Services.AddTransient<IValidator<UpdatePersonCommand>, UpdatePersonCommandValidator>();
-builder.Services.AddTransient<IValidator<Person>, PersonValidator>();
-builder.Services.AddTransient<IValidator<PhoneNumber>, PhoneNumberValidator>();
-builder.Services.AddTransient<IValidator<RelatedPerson>, RelatedPersonValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreatePersonCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<PersonValidator>();
+
+//builder.Services.AddTransient<IValidator<CreatePersonCommand>, CreatePersonCommandValidator>();
+//builder.Services.AddTransient<IValidator<UpdatePersonCommand>, UpdatePersonCommandValidator>();
+//builder.Services.AddTransient<IValidator<Person>, PersonValidator>();
+//builder.Services.AddTransient<IValidator<PhoneNumber>, PhoneNumberValidator>();
+//builder.Services.AddTransient<IValidator<RelatedPerson>, RelatedPersonValidator>();
 
 builder.Services.AddMediatR(typeof(CreatePersonCommandHandler).Assembly);
 

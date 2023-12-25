@@ -48,7 +48,7 @@ namespace Application.Persons.Commands
                     PhoneNumbers = phoneNumbers,
                     CityId = request.CityId
                 };
-
+         
                 await _personRepository.CreateAsync(person);
                 await _unitOfWork.CommitAsync();
             }

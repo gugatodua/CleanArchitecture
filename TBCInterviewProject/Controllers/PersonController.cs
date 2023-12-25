@@ -1,8 +1,14 @@
 ﻿using Application.Persons.Commands;
 using Application.Persons.Queries;
+using Domain;
 using Domain.Enums;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using TBCInterviewProject.Api.Middleware;
+using TBCInterviewProject.Api.Resources;
+using TBCInterviewProject.Api.Validation;
 
 namespace TBCInterviewProject.Api.Controllers
 {
@@ -12,10 +18,12 @@ namespace TBCInterviewProject.Api.Controllers
     public class PersonController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IStringLocalizer<ErrorResources> _localizer;
 
-        public PersonController(IMediator mediator)
+        public PersonController(IMediator mediator, IStringLocalizer<ErrorResources> localizer)
         {
             _mediator = mediator;
+            _localizer = localizer;
         }
 
         [HttpGet("{id}")]
@@ -77,6 +85,13 @@ namespace TBCInterviewProject.Api.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreatePerson([FromBody] CreatePersonCommand createPersonCommand)
         {
+            var validator = new CreatePersonCommandValidator(_localizer);
+            var validationResult = await validator.ValidateAsync(createPersonCommand);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors);
+            }
+
             await _mediator.Send(createPersonCommand);
 
             return NoContent();
