@@ -6,10 +6,10 @@ namespace Application.Persons.Queries
 {
     public class PersonDetailedSearchQuery : IRequest<IEnumerable<PersonDto>>
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
         public Gender? Gender { get; set; }
-        public string PersonalId { get; set; }
+        public string? PersonalId { get; set; }
         public DateTime? BirthDate { get; set; }
         public int? CityId { get; set; }
 

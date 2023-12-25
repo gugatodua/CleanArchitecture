@@ -3,6 +3,8 @@ using Application.CustomExceptions;
 using Application.Persons;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using System.IO;
 
 namespace Persistence
 {
@@ -10,9 +12,9 @@ namespace Persistence
     {
         private readonly string _storagePath;
 
-        public FileService(IConfiguration configuration)
+        public FileService(IConfiguration configuration, IHostingEnvironment environment)
         {
-            _storagePath = configuration["FileStorageSettings:StoragePath"];
+            _storagePath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, configuration["FileStorageSettings:StoragePath"]));
         }
         public async Task<string> SaveFileAsync(IFormFile file)
         {
@@ -27,12 +29,12 @@ namespace Persistence
                 Directory.CreateDirectory(_storagePath);
             }
 
-            var newFileName = Path.GetTempFileName();
-            var filePath = Path.Combine(_storagePath, newFileName);
+            using (var fileStream = new FileStream(Path.Combine(_storagePath, file.FileName), FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
 
-            await file.CopyToAsync(File.Create(filePath));
-
-            return filePath;
+            return _storagePath;
         }
     }
 }

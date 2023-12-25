@@ -24,23 +24,33 @@ namespace Application.Persons.Commands
 
         public async Task<Unit> Handle(UploadPictureCommand request, CancellationToken cancellationToken)
         {
-            var person = await _personRepository.GetByIdAsync(request.PersonId);
-            if (person == null)
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
             {
-                throw new Exception("Person not found");
-            }
+                var person = await _personRepository.GetPersonDbModelByIdAsync(request.PersonId);
+                if (person == null)
+                {
+                    throw new Exception("Person not found");
+                }
 
-            if (request.Picture == null || request.Picture.Length == 0)
+                if (request.Picture == null || request.Picture.Length == 0)
+                {
+                    throw new ArgumentException("No picture file provided");
+                }
+
+                var imageAddressPath = await _fileService.SaveFileAsync(request.Picture);
+
+                person.ImageURL = imageAddressPath;
+
+                _personRepository.Update(person);
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception)
             {
-                throw new ArgumentException("No picture file provided");
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
             }
-
-            var imageAddressPath = await _fileService.SaveFileAsync(request.Picture);
-
-            person.ImageURL = imageAddressPath;
-
-            _personRepository.Update(person);
-            await _unitOfWork.CommitAsync();
 
             return Unit.Value;
         }

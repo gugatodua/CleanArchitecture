@@ -1,6 +1,10 @@
-﻿using Domain;
+﻿using Application.CustomExceptions;
+using Application.Persons.Queries.DTOs;
+using AutoMapper;
+using Domain;
 using Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Localization;
 
 namespace Application.Persons.Commands
 {
@@ -10,34 +14,55 @@ namespace Application.Persons.Commands
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public Gender Gender { get; set; }
-        public string PersonalNumber { get; set; }
+        public string PersonalId { get; set; }
         public DateTime BirthDate { get; set; }
         public int CityId { get; set; }
-        public List<PhoneNumber> PhoneNumbers { get; set; }
+        public List<PhoneNumberDto> PhoneNumbers { get; set; }
     }
 
     public class UpdatePersonCommandHandler : IRequestHandler<UpdatePersonCommand, Person>
     {
         private readonly IPersonRepository _personRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IStringLocalizer _localizer;
+        private readonly IMapper _mapper;
 
-        public UpdatePersonCommandHandler(IPersonRepository personRepository, IUnitOfWork unitOfWork)
+        public UpdatePersonCommandHandler(IPersonRepository personRepository, IUnitOfWork unitOfWork, IStringLocalizer localizer, IMapper mapper)
         {
             _personRepository = personRepository;
             _unitOfWork = unitOfWork;
+            _localizer = localizer;
+            _mapper = mapper;
         }
 
         public async Task<Person> Handle(UpdatePersonCommand request, CancellationToken cancellationToken)
         {
-            var person = await _personRepository.GetByIdAsync(request.Id);
+            await _unitOfWork.BeginTransactionAsync();
+            var person = await _personRepository.GetPersonDbModelByIdAsync(request.Id);
 
-            if (person == null)
+            try
             {
-                throw new Exception("Person not found");
-            }
+                if (person == null)
+                {
+                    throw new PersonNotFoundException(System.Net.HttpStatusCode.NotFound, _localizer["PersonNotFound"]);
+                }
 
-            _personRepository.Update(person);
-            await _unitOfWork.CommitAsync();
+                person.BirthDate = request.BirthDate;
+                person.CityId = request.CityId;
+                person.FirstName = request.FirstName;
+                person.LastName = request.LastName;
+                person.Gender = request.Gender;
+                person.PersonalId = request.PersonalId;
+                person.PhoneNumbers = _mapper.Map<List<PhoneNumber>>(request.PhoneNumbers);
+
+                _personRepository.Update(person);
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
 
             return person;
         }

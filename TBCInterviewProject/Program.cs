@@ -1,15 +1,13 @@
 using Application;
+using Application.Behaviours;
 using Application.Persons;
 using Application.Persons.Commands;
-using Domain;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Persistence;
 using Persistence.Repositories;
-using Persistence.Validators;
 using TBCInterviewProject.Api;
 using TBCInterviewProject.Api.Middleware;
 using TBCInterviewProject.Api.Resources;
@@ -29,16 +27,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IStringLocalizer, StringLocalizer<ErrorResources>>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreatePersonCommandValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<PersonValidator>();
 
-//builder.Services.AddTransient<IValidator<CreatePersonCommand>, CreatePersonCommandValidator>();
-//builder.Services.AddTransient<IValidator<UpdatePersonCommand>, UpdatePersonCommandValidator>();
-//builder.Services.AddTransient<IValidator<Person>, PersonValidator>();
-//builder.Services.AddTransient<IValidator<PhoneNumber>, PhoneNumberValidator>();
-//builder.Services.AddTransient<IValidator<RelatedPerson>, RelatedPersonValidator>();
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 builder.Services.AddMediatR(typeof(CreatePersonCommandHandler).Assembly);
 

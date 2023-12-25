@@ -9,7 +9,10 @@ namespace Application.Persons
         public PersonMappingProfile()
         {
             CreateMap<Person, PersonDto>();
+
             CreateMap<RelatedPerson, RelatedPersonDto>();
+            CreateMap<RelatedPersonDto, RelatedPerson>();
+
             CreateMap<PhoneNumber, PhoneNumberDto>();
             CreateMap<PhoneNumberDto, PhoneNumber>();
         }

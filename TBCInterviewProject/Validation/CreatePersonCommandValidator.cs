@@ -10,12 +10,14 @@ namespace TBCInterviewProject.Api.Validation
         public CreatePersonCommandValidator(IStringLocalizer<ErrorResources> localizer)
         {
             RuleFor(x => x.FirstName)
-           .NotEmpty().WithMessage(localizer["FirstNameRequired"])
-           .Length(2, 50).WithMessage(localizer["FirstNameLengthInvalid"]);
+               .NotEmpty().WithMessage(localizer["FirstNameRequired"])
+               .Length(2, 50).WithMessage(localizer["FirstNameLengthInvalid"])
+               .Matches(@"^[a-zA-Zა-ჰ]+$").WithMessage(localizer["FirstNameOnlyInGeorgian"]);
 
             RuleFor(x => x.LastName)
                 .NotEmpty().WithMessage(localizer["LastNameRequired"])
-                .Length(2, 50).WithMessage(localizer["LastNameLengthInvalid"]);
+                .Length(2, 50).WithMessage(localizer["LastNameLengthInvalid"])
+                .Matches(@"^[a-zA-Zა-ჰ]+$").WithMessage(localizer["LastNameOnlyInGeorgian"]);
 
             RuleFor(x => x.Gender)
                 .NotEmpty().WithMessage(localizer["GenderRequired"]);

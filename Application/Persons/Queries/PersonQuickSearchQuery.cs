@@ -5,9 +5,9 @@ namespace Application.Persons.Queries
 {
     public class PersonQuickSearchQuery : IRequest<IEnumerable<PersonDto>>
     {
-        public string Keyword { get; }
+        public string? Keyword { get; }
 
-        public PersonQuickSearchQuery(string keyword)
+        public PersonQuickSearchQuery(string? keyword)
         {
             Keyword = keyword;
         }

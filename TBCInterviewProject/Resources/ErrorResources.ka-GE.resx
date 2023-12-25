@@ -173,6 +173,7 @@
   </data>
   <data name="PersonNotFound" xml:space="preserve">
     <value>ფიზიკური პირი არ მოიძებნა</value>
+    <comment>ფიზიკური პირი არ მოიძებნა</comment>
   </data>
   <data name="PhoneNumberRequired" xml:space="preserve">
     <value>ტელეფონის ნომრის მითითება სავალდებულოა</value>

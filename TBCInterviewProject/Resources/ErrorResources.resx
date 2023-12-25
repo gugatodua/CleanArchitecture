@@ -164,8 +164,10 @@
   </data>
   <data name="PersonNotFound" xml:space="preserve">
     <value>Person Not Found</value>
+    <comment>Person Not Found</comment>
   </data>
   <data name="PhoneNumberRequired" xml:space="preserve">
     <value>Phone number is required</value>
+    <comment>Phone number is required</comment>
   </data>
 </root>

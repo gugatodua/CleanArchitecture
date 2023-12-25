@@ -20,7 +20,7 @@ namespace TBCInterviewProject.Api.Validation
             RuleFor(x => x.Gender)
                 .NotEmpty().WithMessage(localizer["GenderRequired"]);
 
-            RuleFor(x => x.PersonalNumber)
+            RuleFor(x => x.PersonalId)
                 .NotEmpty().WithMessage(localizer["PersonalNumberRequired"]);
 
             RuleFor(x => x.BirthDate)

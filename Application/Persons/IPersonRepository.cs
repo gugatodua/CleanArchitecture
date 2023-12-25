@@ -8,12 +8,16 @@ namespace Application.Persons
     {
         Task CreateAsync(Person person);
         void Delete(Person person);
+        void DeleteRelatedPerson(RelatedPerson person);
         Task<IEnumerable<Person>> GetAllAsync(Person person);
         Task<IEnumerable<RelatedPersonReportDto>> GetRelatedPersonReportByRelationTypeReportAsync();
-        Task<Person> GetByIdAsync(int id);
+        Task<PersonDto> GetByIdAsync(int id);
+        Task<RelatedPerson> GetRelatedPersonById(int id);
+        Task<Person> GetPersonDbModelByIdAsync(int id);
         void Update(Person person);
         Task UpdateRelatedPersonsAsync(int personId, IEnumerable<RelatedPersonDto> relatedPersonDtos);
-        Task<IEnumerable<PersonDto>> QuickSearchPerson(string keyword);
+        Task<IEnumerable<PersonDto>> QuickSearchPerson(string? keyword);
         Task<IEnumerable<PersonDto>> DetailSearchPerson(PersonDetailedSearchQuery detailedSearchQuery);
+        Task AddRelatedPerson(RelatedPersonDto relatedPersonDto);
     }
 }

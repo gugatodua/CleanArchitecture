@@ -22,8 +22,19 @@ namespace Application.Persons.Commands
 
         public async Task<Unit> Handle(UpdateRelatedPersonListCommand request, CancellationToken cancellationToken)
         {
-            await _personRepository.UpdateRelatedPersonsAsync(request.PersonId, request.RelatedPersons);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                await _personRepository.UpdateRelatedPersonsAsync(request.PersonId, request.RelatedPersons);
+                await _unitOfWork.CommitAsync();
+
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
 
             return Unit.Value;
         }

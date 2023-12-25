@@ -1,29 +1,21 @@
 ﻿using Application.Persons.Commands;
 using Application.Persons.Queries;
-using Domain;
 using Domain.Enums;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using TBCInterviewProject.Api.Middleware;
-using TBCInterviewProject.Api.Resources;
-using TBCInterviewProject.Api.Validation;
 
 namespace TBCInterviewProject.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
     [ModelValidation]
-    public class PersonController : ControllerBase
+    public class PersonsController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IStringLocalizer<ErrorResources> _localizer;
 
-        public PersonController(IMediator mediator, IStringLocalizer<ErrorResources> localizer)
+        public PersonsController(IMediator mediator)
         {
             _mediator = mediator;
-            _localizer = localizer;
         }
 
         [HttpGet("{id}")]
@@ -41,26 +33,26 @@ namespace TBCInterviewProject.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("related-persons-report")]
+        [HttpGet("Related-persons-report")]
         public async Task<IActionResult> GetRelatedPersonsByRelationTypeReport()
         {
             return Ok(await _mediator.Send(new GetRelatedPersonsByRelationTypeReportQuery()));
         }
 
-        [HttpGet("quick-search")]
-        public async Task<IActionResult> QuickSearchPerson(string keyword)
+        [HttpGet("Quick-search")]
+        public async Task<IActionResult> QuickSearchPerson(string? keyword)
         {
             var query = new PersonQuickSearchQuery(keyword);
             var result = await _mediator.Send(query);
             return Ok(result);
         }
 
-        [HttpGet("search")]
+        [HttpGet("Search")]
         public async Task<IActionResult> DetailedSearch(
-            string firstName,
-            string lastName,
+            string? firstName,
+            string? lastName,
             Gender? gender,
-            string personalId,
+            string? personalId,
             DateTime? birthDate,
             int? cityId,
             int pageNumber = 1,
@@ -82,22 +74,23 @@ namespace TBCInterviewProject.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPost("create")]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreatePerson([FromBody] CreatePersonCommand createPersonCommand)
         {
-            var validator = new CreatePersonCommandValidator(_localizer);
-            var validationResult = await validator.ValidateAsync(createPersonCommand);
-            if (!validationResult.IsValid)
-            {
-                throw new ValidationException(validationResult.Errors);
-            }
-
             await _mediator.Send(createPersonCommand);
 
             return NoContent();
         }
 
-        [HttpPut("update")]
+        [HttpPost("Add-related-person")]
+        public async Task<IActionResult> AddRelatedPerson([FromBody] AddRelatedPersonCommand addRelatedPersonCommand)
+        {
+            await _mediator.Send(addRelatedPersonCommand);
+
+            return NoContent();
+        }
+
+        [HttpPut("Update")]
         public async Task<IActionResult> UpdatePerson([FromBody] UpdatePersonCommand updatePersonCommand)
         {
             await _mediator.Send(updatePersonCommand);
@@ -105,7 +98,7 @@ namespace TBCInterviewProject.Api.Controllers
             return NoContent();
         }
 
-        [HttpPut("update-related-people")]
+        [HttpPut("Update-related-people")]
         public async Task<IActionResult> UpdateRelatedPersonList([FromBody] UpdateRelatedPersonListCommand updateRelatedPersonListCommand)
         {
             await _mediator.Send(updateRelatedPersonListCommand);
@@ -113,7 +106,7 @@ namespace TBCInterviewProject.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("Delete")]
         public async Task<IActionResult> DeletePerson([FromBody] DeletePersonCommand deletePersonCommand)
         {
             await _mediator.Send(deletePersonCommand);
@@ -121,9 +114,23 @@ namespace TBCInterviewProject.Api.Controllers
             return NoContent();
         }
 
-        [HttpPut("upload")]
-        public async Task<IActionResult> UploadPicture([FromBody] UploadPictureCommand uploadPictureCommand)
+        [HttpDelete("Delete-related-person")]
+        public async Task<IActionResult> DeleteRelatedPerson([FromBody] DeleteRelatedPersonCommand deleteRelatedPersonCommand)
         {
+            await _mediator.Send(deleteRelatedPersonCommand);
+
+            return NoContent();
+        }
+
+        [HttpPut("Upload")]
+        public async Task<IActionResult> UploadPicture(int personId, IFormFile file)
+        {
+            var uploadPictureCommand = new UploadPictureCommand
+            {
+                PersonId = personId,
+                Picture = file
+            };
+
             await _mediator.Send(uploadPictureCommand);
 
             return NoContent();

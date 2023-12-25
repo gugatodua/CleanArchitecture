@@ -37,23 +37,23 @@ namespace TBCInterviewProject.Api.Middleware
                 case Application.CustomExceptions.PersonNotFoundException:
                     statusCode = HttpStatusCode.NotFound;
                     errorMessageKey = "PersonNotFound";
-                    message = localizer[errorMessageKey];
+                    message = localizer[errorMessageKey].ToString();
                     break;
 
                 case Application.CustomExceptions.FileUploadException:
                     statusCode = HttpStatusCode.BadRequest;
                     errorMessageKey = "FileUploadError";
-                    message = localizer[errorMessageKey];
+                    message = localizer[errorMessageKey].Value;
                     break;
 
-                case Application.CustomExceptions.ApplicationException appEx:
+                case Application.CustomExceptions.AppException appEx:
                     statusCode = appEx.StatusCode;
                     message = ex.Message;
                     break;
 
                 default:
                     logger.LogError(ex, ex.Message);
-                    message = localizer[errorMessageKey];
+                    message = localizer[errorMessageKey].Value;
                     break;
             }
 

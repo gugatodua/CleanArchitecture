@@ -27,7 +27,7 @@ namespace Persistence.Repositories
             await _tbcDbContext.Persons.AddAsync(person);
         }
 
-        public void Delete(Person person)
+        public async void Delete(Person person)
         {
             _tbcDbContext.RemoveRange(person.PhoneNumbers);
             _tbcDbContext.RemoveRange(person.RelatedPeople);
@@ -39,9 +39,19 @@ namespace Persistence.Repositories
             return await _tbcDbContext.Persons.ToArrayAsync();
         }
 
-        public async Task<Person> GetByIdAsync(int id)
+        public async Task<PersonDto> GetByIdAsync(int id)
         {
-            return await _tbcDbContext.Persons.SingleOrDefaultAsync(p => p.Id == id);
+            var person = await GetPersonDbModelByIdAsync(id);
+
+            return _mapper.Map<PersonDto>(person);
+        }
+
+        public async Task<Person> GetPersonDbModelByIdAsync(int id)
+        {
+            return await _tbcDbContext.Persons
+                .Include(x => x.PhoneNumbers)
+                .Include(x => x.RelatedPeople)
+                .SingleOrDefaultAsync(p => p.Id == id);
         }
 
         public async void Update(Person person)
@@ -64,7 +74,7 @@ namespace Persistence.Repositories
             }
 
             person.RelatedPeople.Clear();
-           
+
             var relatedPeople = _mapper.Map<IEnumerable<RelatedPerson>>(relatedPersonDtos);
 
             person.RelatedPeople.AddRange(relatedPeople);
@@ -87,7 +97,7 @@ namespace Persistence.Repositories
             }).ToListAsync();
         }
 
-        public async Task<IEnumerable<PersonDto>> QuickSearchPerson(string keyword)
+        public async Task<IEnumerable<PersonDto>> QuickSearchPerson(string? keyword)
         {
             var query = _tbcDbContext.Persons.AsQueryable();
 
@@ -141,6 +151,32 @@ namespace Persistence.Repositories
                             .ToListAsync();
 
             return _mapper.Map<IEnumerable<PersonDto>>(persons);
+        }
+
+        public async Task AddRelatedPerson(RelatedPersonDto relatedPersonDto)
+        {
+            var relatedPerson = _mapper.Map<RelatedPerson>(relatedPersonDto);
+
+            var person = await GetPersonDbModelByIdAsync(relatedPersonDto.PersonId);
+            if (person == null)
+            {
+                throw new PersonNotFoundException(System.Net.HttpStatusCode.NotFound, _localizer["PersonNotFound"]);
+            }
+
+            relatedPerson.Person = person;
+
+            await _tbcDbContext.RelatedPersons.AddAsync(relatedPerson);
+        }
+
+        public async Task<RelatedPerson> GetRelatedPersonById(int id)
+        {
+            return await _tbcDbContext.RelatedPersons
+                .SingleOrDefaultAsync(x => x.Id == id);
+        }
+
+        public void DeleteRelatedPerson(RelatedPerson relatedPerson)
+        {
+            _tbcDbContext.Remove(relatedPerson);
         }
     }
 }

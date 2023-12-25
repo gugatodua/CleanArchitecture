@@ -2,7 +2,7 @@
 
 namespace Application.CustomExceptions
 {
-    public class PersonNotFoundException : ApplicationException
+    public class PersonNotFoundException : AppException
     {
         public PersonNotFoundException(HttpStatusCode statusCode, string message) : base(statusCode, message)
         {
