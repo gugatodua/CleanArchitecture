@@ -22,7 +22,9 @@ namespace Persistence
                 .WithOne(rp => rp.Person)
                 .HasForeignKey(rp => rp.PersonId);
 
-            modelBuilder.Entity<PhoneNumber>().HasNoKey();
+            modelBuilder.Entity<PhoneNumber>().HasKey(e => e.Id);
+
+            modelBuilder.Entity<RelatedPerson>().HasKey(e => e.Id);
         }
 
         public DbSet<Person> Persons { get; set; }

@@ -29,7 +29,7 @@ namespace TBCInterviewProject.Api.Validation
             RuleFor(x => x.CityId)
                 .NotEmpty().WithMessage(localizer["CityIdRequired"]);
 
-            RuleFor(x => x.PhoneNumbers)
+            RuleFor(x => x.PhoneNumberDtos)
                 .NotEmpty().WithMessage(localizer["PhoneNumberRequired"])
                 .Must(x => x != null && x.Count > 0).WithMessage(localizer["PhoneNumberRequired"]);
         }

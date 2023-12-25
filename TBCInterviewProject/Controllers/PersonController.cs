@@ -1,6 +1,5 @@
 ﻿using Application.Persons.Commands;
 using Application.Persons.Queries;
-using Application.Persons.Queries.DTOs;
 using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace TBCInterviewProject.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v1/[controller]")]
     [ModelValidation]
     public class PersonController : ControllerBase
     {
@@ -19,7 +18,7 @@ namespace TBCInterviewProject.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetPerson(int id)
         {
             var getPersonQuery = new GetPersonQuery { Id = id };
@@ -34,13 +33,13 @@ namespace TBCInterviewProject.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
+        [HttpGet("related-persons-report")]
         public async Task<IActionResult> GetRelatedPersonsByRelationTypeReport()
         {
             return Ok(await _mediator.Send(new GetRelatedPersonsByRelationTypeReportQuery()));
         }
 
-        [HttpGet]
+        [HttpGet("quick-search")]
         public async Task<IActionResult> QuickSearchPerson(string keyword)
         {
             var query = new PersonQuickSearchQuery(keyword);
@@ -48,6 +47,7 @@ namespace TBCInterviewProject.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("search")]
         public async Task<IActionResult> DetailedSearch(
             string firstName,
             string lastName,
@@ -74,7 +74,7 @@ namespace TBCInterviewProject.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> CreatePerson([FromBody] CreatePersonCommand createPersonCommand)
         {
             await _mediator.Send(createPersonCommand);
@@ -82,7 +82,7 @@ namespace TBCInterviewProject.Api.Controllers
             return NoContent();
         }
 
-        [HttpPut]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdatePerson([FromBody] UpdatePersonCommand updatePersonCommand)
         {
             await _mediator.Send(updatePersonCommand);
@@ -90,7 +90,7 @@ namespace TBCInterviewProject.Api.Controllers
             return NoContent();
         }
 
-        [HttpPut]
+        [HttpPut("update-related-people")]
         public async Task<IActionResult> UpdateRelatedPersonList([FromBody] UpdateRelatedPersonListCommand updateRelatedPersonListCommand)
         {
             await _mediator.Send(updateRelatedPersonListCommand);
@@ -98,7 +98,7 @@ namespace TBCInterviewProject.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete]
+        [HttpDelete("delete")]
         public async Task<IActionResult> DeletePerson([FromBody] DeletePersonCommand deletePersonCommand)
         {
             await _mediator.Send(deletePersonCommand);
@@ -106,7 +106,7 @@ namespace TBCInterviewProject.Api.Controllers
             return NoContent();
         }
 
-        [HttpPut]
+        [HttpPut("upload")]
         public async Task<IActionResult> UploadPicture([FromBody] UploadPictureCommand uploadPictureCommand)
         {
             await _mediator.Send(uploadPictureCommand);
