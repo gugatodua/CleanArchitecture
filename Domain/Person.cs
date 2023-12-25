@@ -18,7 +18,7 @@ namespace Domain
 
         public int CityId { get; set; }
 
-        public string ImageURL { get; set; }
+        public string? ImageURL { get; set; }
 
         public List<PhoneNumber> PhoneNumbers { get; set; } = new List<PhoneNumber>();
 

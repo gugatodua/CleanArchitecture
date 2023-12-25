@@ -3,6 +3,8 @@ using Application.Persons;
 using Application.Persons.Commands;
 using Domain;
 using FluentValidation;
+using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Persistence;
@@ -34,6 +36,8 @@ builder.Services.AddTransient<IValidator<UpdatePersonCommand>, UpdatePersonComma
 builder.Services.AddTransient<IValidator<Person>, PersonValidator>();
 builder.Services.AddTransient<IValidator<PhoneNumber>, PhoneNumberValidator>();
 builder.Services.AddTransient<IValidator<RelatedPerson>, RelatedPersonValidator>();
+
+builder.Services.AddMediatR(typeof(CreatePersonCommandHandler).Assembly);
 
 builder.Services.AddAutoMapper(typeof(PersonMappingProfile));
 

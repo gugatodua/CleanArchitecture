@@ -11,11 +11,10 @@ namespace Application.Persons.Commands
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public Gender Gender { get; set; }
-        public string PersonalNumber { get; set; }
+        public string PersonalId { get; set; }
         public DateTime BirthDate { get; set; }
         public int CityId { get; set; }
         public List<PhoneNumberDto> PhoneNumberDtos { get; set; }
-        public List<RelatedPersonDto> RelatedPersonDtos { get; set; }
     }
 
     public class CreatePersonCommandHandler : IRequestHandler<CreatePersonCommand, Unit>
@@ -33,22 +32,31 @@ namespace Application.Persons.Commands
 
         public async Task<Unit> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
         {
-            var phoneNumbers = _mapper.Map<List<PhoneNumber>>(request.PhoneNumberDtos);
-            var relatedPeople = _mapper.Map<List<RelatedPerson>>(request.RelatedPersonDtos);
+            await _unitOfWork.BeginTransactionAsync();
 
-            var person = new Domain.Person
+            try
             {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                BirthDate = request.BirthDate,
-                Gender = request.Gender,
-                PhoneNumbers = phoneNumbers,
-                RelatedPeople = relatedPeople,
-                CityId = request.CityId
-            };
+                var phoneNumbers = _mapper.Map<List<PhoneNumber>>(request.PhoneNumberDtos);
 
-            await _personRepository.CreateAsync(person);
-            await _unitOfWork.CommitAsync();
+                var person = new Domain.Person
+                {
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    BirthDate = request.BirthDate,
+                    PersonalId = request.PersonalId,
+                    Gender = request.Gender,
+                    PhoneNumbers = phoneNumbers,
+                    CityId = request.CityId
+                };
+
+                await _personRepository.CreateAsync(person);
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
 
             return Unit.Value;
         }

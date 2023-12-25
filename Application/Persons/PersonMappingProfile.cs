@@ -11,6 +11,7 @@ namespace Application.Persons
             CreateMap<Person, PersonDto>();
             CreateMap<RelatedPerson, RelatedPersonDto>();
             CreateMap<PhoneNumber, PhoneNumberDto>();
+            CreateMap<PhoneNumberDto, PhoneNumber>();
         }
     }
 }
